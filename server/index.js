@@ -11,8 +11,10 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleWare')
 const app = express();
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
-app.use(upload())
+app.use(cors({
+    origin: "https://shubhamsomwanshi11-blog.vercel.app",
+    credentials: true
+  }));
 app.use('/uploads',express.static(__dirname + '/uploads'))
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
