@@ -28,7 +28,7 @@ const Dashboard = () => {
       setIsLoading(false);
     };
     fetchPosts();
-  }, [token, navigate, currentUser, posts]);
+  }, [token, navigate, currentUser]);
 
   const handlePostDelete = (id) => {
     setPosts((prevPosts) => prevPosts.filter(post => post._id !== id));
