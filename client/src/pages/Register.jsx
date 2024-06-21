@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
 
 const Register = () => {
   const [userData, setUserData] = useState({
@@ -11,6 +12,7 @@ const Register = () => {
   });
   const [avatar, setAvatar] = useState(null);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
 
   const changeInputHandler = (e) => {
@@ -20,6 +22,7 @@ const Register = () => {
   };
 
   const registerUser = async (e) => {
+
     e.preventDefault();
     setError('');
 
@@ -33,11 +36,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}api/users/register`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}api/users/register`, formData);
       if (!response || !response.data) {
         setError(`Couldn't register user. Please try again.`);
         return;
@@ -52,6 +51,8 @@ const Register = () => {
       setError(err.response?.data?.message || 'An error occurred');
     }
   };
+
+  if (isLoading) return <Loader />
 
   return (
     <section className="register">
