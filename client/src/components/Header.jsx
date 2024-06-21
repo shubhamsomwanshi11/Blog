@@ -26,6 +26,7 @@ const Header = () => {
           <li><NavLink to={`/profile/${currentUser?.id}`} onClick={closeNavHandler}>Profile</NavLink></li>
           <li><NavLink to='/create' onClick={closeNavHandler}>Create Post</NavLink></li>
           <li><NavLink to='/authors' onClick={closeNavHandler}>Authors</NavLink></li>
+          <li><NavLink to='/dashboard' onClick={closeNavHandler}>Dashboard</NavLink></li>
           <li><NavLink to='/logout' onClick={closeNavHandler}>Logout</NavLink></li>
         </ul>
         }
