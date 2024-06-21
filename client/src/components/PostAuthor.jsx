@@ -27,7 +27,7 @@ const PostAuthor = ({ authorID, createdAt }) => {
   return (
     <Link to={`/posts/users/${authorID}`} className='post_author'>
       <div className="post_author-avatar">
-        <img loading='lazy' src={author.avatar ? `${process.env.REACT_APP_ASSETS_URL}/uploads/${author.avatar}` : Avatar} alt={author.name} />
+        <img loading='lazy' src={author.avatar} alt={author.name} />
       </div>
       <div className="post_author-details">
         <h5 >By: {author.name}</h5>

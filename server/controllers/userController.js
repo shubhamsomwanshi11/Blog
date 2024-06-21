@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const { v4: uuid } = require('uuid')
 
+// Register
 const registerUser = async (req, res, next) => {
     try {
         const { name, email, password, password2 } = req.body;
@@ -33,28 +34,25 @@ const registerUser = async (req, res, next) => {
         }
 
         const { avatar } = req.files;
-        if (!avatar) return next(new HttpError("Avatar is required"));
         if (avatar.size > 500000) {
             return next(new HttpError("Avatar file should be less than 500KB.", 422));
         }
 
-        let fileName = avatar.name;
-        let splittedName = fileName.split('.');
-        let newFileName = `${splittedName[0]}_${uuid()}.${splittedName[splittedName.length - 1]}`;
+        // Read the file as a base64 string
+        const base64Avatar = avatar.data.toString('base64');
+        const avatarDataUrl = `data:${avatar.mimetype};base64,${base64Avatar}`;
 
-        // Move the file to the uploads directory
-        avatar.mv(path.join(__dirname, '..', 'uploads', newFileName), async (err) => {
-            if (err) {
-                return next(new HttpError("Failed to upload Avatar.", 500));
-            }
-
-            try {
-                await User.create({ name, email: newEmail, password: hashedPass, avatar: newFileName });
-                res.status(201).json("You are registered successfully.");
-            } catch (error) {
-                return next(new HttpError("User registration failed.", 422));
-            }
-        });
+        try {
+            await User.create({
+                name,
+                email: newEmail,
+                password: hashedPass,
+                avatar: avatarDataUrl
+            });
+            res.status(201).json("You are registered successfully.");
+        } catch (error) {
+            return next(new HttpError("User registration failed.", 422));
+        }
 
     } catch (error) {
         return next(new HttpError("An error occurred. Please try again.", 500));
@@ -114,41 +112,27 @@ const changeAvatar = async (req, res, next) => {
             return next(new HttpError("User not found.", 403));
         }
 
-        // Delete old avatar if it exists
-        if (user.avatar) {
-            fs.unlink(path.join(__dirname, '..', 'uploads', user.avatar), (err) => {
-                if (err) {
-                    console.error(err);
-                    // Proceed without returning, since deletion failure is not critical for new upload
-                }
-            });
-        }
-
         const { avatar } = req.files;
         if (avatar.size > 500000) {
             return next(new HttpError("Profile picture size should be less than 500KB.", 422));
         }
 
-        let fileName = avatar.name;
-        let splittedFileName = fileName.split('.');
-        let newFileName = `${splittedFileName[0]}_${uuid()}.${splittedFileName[splittedFileName.length - 1]}`;
+        // Convert image to base64
+        const imageBuffer = avatar.data.toString('base64');
+        const base64Image = `data:${avatar.mimetype};base64,${imageBuffer}`;
 
-        avatar.mv(path.join(__dirname, '..', 'uploads', newFileName), async (err) => {
-            if (err) {
-                return next(new HttpError("Failed to upload image.", 500));
-            }
+        // Update user's avatar with base64 image
+        const updatedAvatar = await User.findByIdAndUpdate(req.user.id, { avatar: base64Image }, { new: true });
+        if (!updatedAvatar) {
+            return next(new HttpError("Avatar couldn't be changed.", 422));
+        }
 
-            const updatedAvatar = await User.findByIdAndUpdate(req.user.id, { avatar: newFileName }, { new: true });
-            if (!updatedAvatar) {
-                return next(new HttpError("Avatar couldn't be changed.", 422));
-            }
-
-            res.status(200).json(updatedAvatar);
-        });
+        res.status(200).json(updatedAvatar);
     } catch (error) {
         return next(new HttpError(error.message || "An error occurred.", 500));
     }
 };
+
 
 // Edit user details
 const updateDetails = async (req, res, next) => {

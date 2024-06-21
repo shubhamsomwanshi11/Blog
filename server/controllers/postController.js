@@ -25,44 +25,36 @@ const createPost = async (req, res, next) => {
             return next(new HttpError("Thumbnail file should be less than 2MB.", 422));
         }
 
-        let fileName = thumbnail.name;
-        let splittedName = fileName.split('.');
-        let newFileName = `${splittedName[0]}_${uuid()}.${splittedName[splittedName.length - 1]}`;
+        // Convert thumbnail image to base64
+        const imageBuffer = thumbnail.data.toString('base64');
+        const base64Thumbnail = `data:${thumbnail.mimetype};base64,${imageBuffer}`;
 
-        const uploadPath = path.join(__dirname, '..', 'uploads', newFileName);
+        try {
+            const newPost = await Post.create({
+                title,
+                category,
+                description,
+                thumbnail: base64Thumbnail, // Store thumbnail in base64 format
+                creator: req.user.id
+            });
 
-        // Move the file to the uploads directory
-        thumbnail.mv(uploadPath, async (err) => {
-            if (err) {
-                return next(new HttpError("Failed to upload thumbnail.", 500));
+            if (!newPost) {
+                return next(new HttpError("Post couldn't be created.", 422));
             }
 
-            try {
-                const newPost = await Post.create({
-                    title,
-                    category,
-                    description,
-                    thumbnail: newFileName,
-                    creator: req.user.id
-                });
+            const currentUser = await User.findById(req.user.id);
+            const userPostCount = currentUser.posts + 1;
+            await User.findByIdAndUpdate(req.user.id, { posts: userPostCount });
 
-                if (!newPost) {
-                    return next(new HttpError("Post couldn't be created.", 422));
-                }
-
-                const currentUser = await User.findById(req.user.id);
-                const userPostCount = currentUser.posts + 1;
-                await User.findByIdAndUpdate(req.user.id, { posts: userPostCount });
-
-                res.status(201).json("New post published successfully.");
-            } catch (error) {
-                return next(new HttpError("Creating post failed, please try again.", 500));
-            }
-        });
+            res.status(201).json("New post published successfully.");
+        } catch (error) {
+            return next(new HttpError("Creating post failed, please try again.", 500));
+        }
     } catch (error) {
         return next(new HttpError("An error occurred. Please try again.", 500));
     }
 }
+
 
 // Get single post
 // GET : api/posts/:id
@@ -140,7 +132,8 @@ const updatePost = async (req, res, next) => {
         const thumbnail = req.files?.thumbnail;
 
         if (!id || !title || !description || !category)
-            return next(new HttpError("Fill in all fields."))
+            return next(new HttpError("Fill in all fields."));
+
         // Find the post by ID
         const post = await Post.findById(id);
         if (!post) {
@@ -149,34 +142,15 @@ const updatePost = async (req, res, next) => {
 
         // Handle thumbnail update
         if (thumbnail) {
-            // Delete old thumbnail if it exists
-            if (post.thumbnail) {
-                fs.unlink(path.join(__dirname, '..', 'uploads', post.thumbnail), (err) => {
-                    if (err) {
-                        console.error(err);
-                        // Proceed without returning, since deletion failure is not critical for new upload
-                    }
-                });
-            }
-
             if (thumbnail.size > 500000) {
                 return next(new HttpError("Thumbnail size should be less than 500KB.", 422));
             }
 
-            let fileName = thumbnail.name;
-            let splittedFileName = fileName.split('.');
-            let newFileName = `${splittedFileName[0]}_${uuid()}.${splittedFileName[splittedFileName.length - 1]}`;
+            // Convert thumbnail image to base64
+            const imageBuffer = thumbnail.data.toString('base64');
+            const base64Thumbnail = `data:${thumbnail.mimetype};base64,${imageBuffer}`;
 
-            await new Promise((resolve, reject) => {
-                thumbnail.mv(path.join(__dirname, '..', 'uploads', newFileName), (err) => {
-                    if (err) {
-                        return reject(new HttpError("Failed to upload thumbnail.", 500));
-                    }
-                    resolve();
-                });
-            });
-
-            post.thumbnail = newFileName;
+            post.thumbnail = base64Thumbnail; // Store thumbnail in base64 format
         }
 
         // Update post fields
@@ -195,6 +169,7 @@ const updatePost = async (req, res, next) => {
 
 
 
+
 // Delete post
 // DELETE : api/posts/delete/:id
 const deletePost = async (req, res, next) => {
@@ -205,15 +180,7 @@ const deletePost = async (req, res, next) => {
         if (!post) {
             return next(new HttpError("Post not found", 404));
         }
-
-        // Delete thumbnail if it exists
-        if (post.thumbnail) {
-            fs.unlink(path.join(__dirname, '..', 'uploads', post.thumbnail), (err) => {
-                if (err) {
-                    console.error('Error deleting thumbnail:', err);
-                }
-            });
-        }
+        
         const currentUser = await User.findById(req.user.id);
         const userPostCount = currentUser.posts - 1;
         await User.findByIdAndUpdate(req.user.id, { posts: userPostCount });

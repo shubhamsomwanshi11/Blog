@@ -388,10 +388,11 @@ textarea {
   border-radius: 50%;
   border: 0.3rem solid var(--color-bg);
   overflow: hidden;
+  display: flex;
 }
 
 .author-info p {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .profile-container {
