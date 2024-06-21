@@ -22,7 +22,7 @@ const Register = () => {
   const registerUser = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     // Create FormData object
     const formData = new FormData();
     for (const key in userData) {
@@ -63,7 +63,8 @@ const Register = () => {
           <input type="email" placeholder='ns@gmail.com' name='email' value={userData.email} onInput={changeInputHandler} />
           <input type="password" placeholder='Password' name='password' value={userData.password} onInput={changeInputHandler} />
           <input type="password" placeholder='Confirm Password' name='password2' value={userData.password2} onInput={changeInputHandler} />
-          <input type="file" name='avatar' onChange={(e) => setAvatar(e.target.files[0])} accept="image/png, image/jpg, image/jpeg" />
+          <label htmlFor="avatar">Avatar</label>
+          <input type="file" id='avatar' name='avatar' onChange={(e) => setAvatar(e.target.files[0])} accept="image/png, image/jpg, image/jpeg" />
           <button type='submit' className='btn' style={{ backgroundColor: 'green', color: 'white' }}>
             Register
           </button>
