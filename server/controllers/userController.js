@@ -6,31 +6,60 @@ const fs = require('fs')
 const path = require('path')
 const { v4: uuid } = require('uuid')
 
-// Register new usr
 const registerUser = async (req, res, next) => {
     try {
         const { name, email, password, password2 } = req.body;
         if (!name || !email || !password || !password2) {
-            return next(new HttpError("Fill in all fields.", 422))
+            return next(new HttpError("Fill in all fields.", 422));
         }
         const newEmail = email.toLowerCase();
-        const emailExists = await User.findOne({ email: newEmail })
+        const emailExists = await User.findOne({ email: newEmail });
 
-        if (emailExists)
+        if (emailExists) {
             return next(new HttpError("User already exists.", 422));
-        if ((password.trim()).length < 8)
-            return next(new HttpError("Password should be at least 8 characters.", 422))
-        if (password != password2)
-            return next(new HttpError("Password do not match.", 422))
+        }
+        if (password.trim().length < 8) {
+            return next(new HttpError("Password should be at least 8 characters.", 422));
+        }
+        if (password !== password2) {
+            return next(new HttpError("Passwords do not match.", 422));
+        }
+
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
 
-        const newUser = await User.create({ name, email: newEmail, password: hashedPass })
-        res.status(201).json(`You are registered sucessfully.`);
+        if (!req.files || !req.files.avatar) {
+            return next(new HttpError("Please choose an Image.", 422));
+        }
+
+        const { avatar } = req.files;
+        if (!avatar) return next(new HttpError("Avatar is required"));
+        if (avatar.size > 500000) {
+            return next(new HttpError("Avatar file should be less than 500KB.", 422));
+        }
+
+        let fileName = avatar.name;
+        let splittedName = fileName.split('.');
+        let newFileName = `${splittedName[0]}_${uuid()}.${splittedName[splittedName.length - 1]}`;
+
+        // Move the file to the uploads directory
+        avatar.mv(path.join(__dirname, '..', 'uploads', newFileName), async (err) => {
+            if (err) {
+                return next(new HttpError("Failed to upload Avatar.", 500));
+            }
+
+            try {
+                await User.create({ name, email: newEmail, password: hashedPass, avatar: newFileName });
+                res.status(201).json("You are registered successfully.");
+            } catch (error) {
+                return next(new HttpError("User registration failed.", 422));
+            }
+        });
+
     } catch (error) {
-        return next(new HttpError("User registation failed.", 422));
+        return next(new HttpError("An error occurred. Please try again.", 500));
     }
-}
+};
 
 // Login 
 const loginUser = async (req, res, next) => {

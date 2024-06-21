@@ -8,6 +8,7 @@ const Register = () => {
     password: '',
     password2: '',
   })
+  const [avatar, setAvatar] = useState(null);
 
   const [error, setError] = useState('')
   const navigate = useNavigate();
@@ -38,6 +39,8 @@ const Register = () => {
     }
   }
 
+
+
   return (
     <section className="register">
       <div className="container">
@@ -48,6 +51,8 @@ const Register = () => {
           <input type="email" placeholder='ns@gmail.com' name='email' value={userData.email} onInput={changeInputHandler} />
           <input type="password" placeholder='Password' name='password' value={userData.password} onInput={changeInputHandler} />
           <input type="password" placeholder='Confirm Password' name='password2' value={userData.password2} onInput={changeInputHandler} />
+          <input type="file" name='avatar' value={avatar} onChange={(e) => setAvatar(e.target.files[0])}
+            accept="image/png, image/jpg, image/jpeg" />
           <button type='submit' className='btn' style={{ backgroundColor: 'green', color: 'white' }}>
             Register
           </button>

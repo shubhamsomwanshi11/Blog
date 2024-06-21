@@ -34,7 +34,7 @@ const Authors = () => {
           {authors.map((author) => (
             <Link key={author._id} to={`/posts/users/${author._id}`} className='author'>
               <div className="author-avatar">
-                <img loading='lazy' src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${author.avatar}`} alt={author.name || 'Author Name'} onError={(e) => { e.target.src = avatar; }} /> {/* Handle missing avatar */}
+                <img loading='lazy' src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${author.avatar}`} alt={author.name || 'Author Name'} />
               </div>
               <div className="author-info">
                 <h4>{author.name}</h4>
