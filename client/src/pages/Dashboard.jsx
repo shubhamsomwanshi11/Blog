@@ -15,6 +15,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!token) navigate('/login');
     const fetchPosts = async () => {
+      setPosts(null);
       setIsLoading(true);
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}api/posts/`, {
@@ -27,7 +28,7 @@ const Dashboard = () => {
       setIsLoading(false);
     };
     fetchPosts();
-  }, [token, navigate]);
+  }, [token, navigate, currentUser, posts]);
 
   const handlePostDelete = (id) => {
     setPosts((prevPosts) => prevPosts.filter(post => post._id !== id));
