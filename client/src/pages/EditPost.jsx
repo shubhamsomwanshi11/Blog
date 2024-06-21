@@ -31,7 +31,6 @@ const UpdatePost = () => {
           setTitle(response.data.title);
           setCategory(response.data.category);
           setDescription(response.data.description);
-          setThumbnail(response.data.thumbnail);
           setPostID(response.data._id);
         }
 
