@@ -20,13 +20,13 @@ const Header = () => {
     <nav>
       <div className="container nav__container">
         <Link to='/' className='nav__logo' onClick={closeNavHandler} >
-          <img loading='lazy'  src={Logo} alt="" className='nav__img' />
+          <img loading='lazy' src={Logo} alt="" className='nav__img' />
         </Link>
         {currentUser?.id && isNavShowinng && <ul className='nav__menu'>
           <li><NavLink to={`/profile/${currentUser?.id}`} onClick={closeNavHandler}>Profile</NavLink></li>
           <li><NavLink to='/create' onClick={closeNavHandler}>Create Post</NavLink></li>
           <li><NavLink to='/authors' onClick={closeNavHandler}>Authors</NavLink></li>
-          <li><NavLink to='/dashboard' onClick={closeNavHandler}>Dashboard</NavLink></li>
+          <li><NavLink to={`/myposts/${currentUser.id}`} onClick={closeNavHandler}>Dashboard</NavLink></li>
           <li><NavLink to='/logout' onClick={closeNavHandler}>Logout</NavLink></li>
         </ul>
         }
