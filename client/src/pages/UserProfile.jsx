@@ -85,7 +85,7 @@ const UserProfile = () => {
         <div className="profile-details">
           <div className="avatar-wrapper">
             <div className="profile-avatar">
-              <img src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${avatar}`} alt="" />
+              <img loading='lazy' src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${avatar}`} alt="" />
             </div>
             <form action="" className="avatar-form">
               <input type="file" name="avatar" id='avatar' onChange={handleAvatarChange} accept='.png,.jpg,.jpeg' />

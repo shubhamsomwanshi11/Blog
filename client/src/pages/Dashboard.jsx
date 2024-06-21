@@ -41,7 +41,7 @@ const Dashboard = () => {
           {posts.map(post => (
             <article key={post._id} className="dashboard-post">
               <div className='dashboard-post-thumbnail'>
-                <img src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${post.thumbnail}`} alt="" />
+                <img loading='lazy' src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${post.thumbnail}`} alt="" />
               </div>
               <div className='dashboard-post-action'>
                 <h5>{post.title}</h5>

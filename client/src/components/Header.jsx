@@ -20,7 +20,7 @@ const Header = () => {
     <nav>
       <div className="container nav__container">
         <Link to='/' className='nav__logo' onClick={closeNavHandler} >
-          <img src={Logo} alt="" className='nav__img' />
+          <img loading='lazy'  src={Logo} alt="" className='nav__img' />
         </Link>
         {currentUser?.id && isNavShowinng && <ul className='nav__menu'>
           <li><NavLink to={`/profile/${currentUser?.id}`} onClick={closeNavHandler}>Profile</NavLink></li>
@@ -31,6 +31,7 @@ const Header = () => {
         }
         {!currentUser?.id && isNavShowinng && <ul className='nav__menu'>
           <li><NavLink to='/authors' onClick={closeNavHandler}>Authors</NavLink></li>
+          <li><NavLink to='/register' onClick={closeNavHandler}>Register</NavLink></li>
           <li><NavLink to='/login' onClick={closeNavHandler}>Login</NavLink></li>
         </ul>
         }

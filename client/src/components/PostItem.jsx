@@ -7,7 +7,7 @@ const PostItem = ({ id, category, thumbnail, title, authorID, createdAt }) => {
     <article className='post'>
       <Link to={`/posts/${id}`}>
         <div className="post_thumbnail">
-          <img src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${thumbnail}`} alt={title} />
+          <img loading='lazy' src={`${process.env.REACT_APP_ASSETS_URL}/uploads/${thumbnail}`} alt={title} />
         </div>
         <div className="post_content">
           <h3>{title}</h3>

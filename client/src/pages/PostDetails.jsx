@@ -47,7 +47,7 @@ const PostDetails = () => {
         </div>
         <h1>{post.title}</h1>
         <div className='post-detail-thumbnail'>
-          <img src={post.thumbnail ? `${process.env.REACT_APP_ASSETS_URL}/uploads/${post.thumbnail}` : Thumbnail} alt="" />
+          <img loading='lazy' src={post.thumbnail ? `${process.env.REACT_APP_ASSETS_URL}/uploads/${post.thumbnail}` : Thumbnail} alt="" />
         </div>
         <div dangerouslySetInnerHTML={{ __html: post.description }} />
       </div>}
