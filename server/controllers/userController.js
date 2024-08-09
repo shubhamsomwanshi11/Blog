@@ -2,9 +2,6 @@ const bcrypt = require('bcryptjs')
 const User = require('../models/userModel')
 const HttpError = require('../models/errorModel')
 const jwt = require('jsonwebtoken')
-const fs = require('fs')
-const path = require('path')
-const { v4: uuid } = require('uuid')
 
 // Register
 const registerUser = async (req, res, next) => {
@@ -34,8 +31,8 @@ const registerUser = async (req, res, next) => {
         }
 
         const { avatar } = req.files;
-        if (avatar.size > 500000) {
-            return next(new HttpError("Avatar file should be less than 500KB.", 422));
+        if (avatar.size > 2000000) {
+            return next(new HttpError("Avatar file should be less than 2MB.", 422));
         }
 
         // Read the file as a base64 string

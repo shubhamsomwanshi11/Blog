@@ -168,8 +168,6 @@ const updatePost = async (req, res, next) => {
 };
 
 
-
-
 // Delete post
 // DELETE : api/posts/delete/:id
 const deletePost = async (req, res, next) => {
