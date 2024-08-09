@@ -243,7 +243,7 @@ footer {
 .post_thumbnail {
   border-radius: var(--radius-3);
   overflow: hidden;
-  /* height: 16rem;  */
+  height: 210px; 
 }
 
 .post_content {
